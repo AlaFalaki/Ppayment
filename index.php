@@ -3,7 +3,7 @@
  * Plugin Name: درگاه پرداخت پاسارگاد برای ووکامرس همراه با تایید سفارش
  * Plugin URI: http://blog.alafalaki.ir/%D8%A7%D9%81%D8%B2%D9%88%D9%86%D9%87-%D9%BE%D8%B1%D8%AF%D8%A7%D8%AE%D8%AA-%D8%A8%D8%A7%D9%86%DA%A9-%D9%BE%D8%A7%D8%B3%D8%A7%D8%B1%DA%AF%D8%A7%D8%AF-%D9%88%D9%88%DA%A9%D8%A7%D9%85%D8%B1%D8%B3/
  * Description: درگاه کامل جهان پی برای سایت های فروش فایل. لطفا قبل از استفاده از طریق لینک دیدن خانه افزونه، تغییرات مورد نیاز افزونه را اعمال نمایید.
- * Version: 1.0
+ * Version: 2.0
  * Author: Ala Alam Falaki
  * Author URI: http://AlaFalaki.ir
  * 
@@ -28,11 +28,17 @@ function WC_P() {
             $this -> init_form_fields();
             $this -> init_settings();
 			
-			$this->title				= $this->get_option('title');
-			$this->description			= $this->get_option('description');
-			$this->merchantCode			= $this->get_option('merchantCode');
-			$this->terminalCode			= $this->get_option('terminalCode');
-            
+			$this -> title					= $this-> settings['title'];
+			$this -> description			= $this-> settings['description'];
+			$this -> merchantCode			= $this-> settings['merchantCode'];
+			$this -> terminalCode			= $this-> settings['terminalCode'];
+			$this -> redirect_page_id		= $this -> settings['redirect_page_id'];
+ 
+			$this -> msg['message'] = "";
+			$this -> msg['class'] = "";
+ 
+			add_action('woocommerce_api_' . strtolower( get_class( $this ) ), array( $this, 'check_Ppayment_response' ) );
+
   		    if ( version_compare( WOOCOMMERCE_VERSION, '2.0.0', '>=' ) ) { // Compatibalization plugin for diffrent versions.
                 add_action( 'woocommerce_update_options_payment_gateways_Ppayment', array( &$this, 'process_admin_options' ) );
              } else {
@@ -71,6 +77,11 @@ function WC_P() {
                     'type' => 'textarea',
                     'description' => 'این توضیحات در سایت، بعد از انتخاب درگاه توسط کاربر نمایش داده می شود .',
                     'default' => 'پرداخت وجه از طریق درگاه بانک پاسارگاد توسط تمام کارت های عضو شتاب .'),
+				'redirect_page_id' => array(
+                    'title' => 'آدرس بازگشت',
+                    'type' => 'select',
+                    'options' => $this -> get_pages('صفحه مورد نظر را انتخاب نمایید'),
+                    'description' => "صفحه‌ای که در صورت پرداخت موفق نشان داده می‌شود را نشان دهید."),
             );
         }
         public function admin_options(){
@@ -80,8 +91,8 @@ function WC_P() {
 			echo '</table>';
 			echo '
 				<div>
-					<a href="http://blog.alafalaki.ir/%D8%A7%D9%81%D8%B2%D9%88%D9%86%D9%87-%D9%BE%D8%B1%D8%AF%D8%A7%D8%AE%D8%AA-%D8%A8%D8%A7%D9%86%DA%A9-%D9%BE%D8%A7%D8%B3%D8%A7%D8%B1%DA%AF%D8%A7%D8%AF-%D9%88%D9%88%DA%A9%D8%A7%D9%85%D8%B1%D8%B3/">صفحه رسمی پلاگین + مستندات .</a><br />
-					<a href="https://github.com/AlaFalaki/Ppayment" target="_blank">حمایت از پروژه در GitHub .</a><br />
+					<a href="http://blog.alafalaki.ir/%D9%BE%D9%84%D8%A7%DA%AF%DB%8C%D9%86-jppayment-%D8%A8%D8%B1%D8%A7%DB%8C-woocommerce-%D9%81%D8%B1%D9%88%D8%B4%DA%AF%D8%A7%D9%87-%D8%B3%D8%A7%D8%B2/">صفحه رسمی پلاگین + مستندات .</a><br />
+					<a href="https://github.com/AlaFalaki/JPpayment" target="_blank">حمایت از پروژه در GitHub .</a><br />
 					<a href="https://twitter.com/AlaFalaki" target="_blank">من را در تویتر دنبال کنید .</a>
 				</div>
 			';
@@ -95,7 +106,9 @@ function WC_P() {
             $order = &new WC_Order($order_id);
 			
 			
-            $callback 				= get_site_url() . "/wc-api/callback_controller/";
+            $callback 				= ($this -> redirect_page_id=="" || $this -> redirect_page_id==0)?get_site_url() . "/":get_permalink($this -> redirect_page_id);
+			$callback 				= add_query_arg( 'wc-api', get_class( $this ), $callback );
+
 			$merchantCode			= $this->merchantCode;
 			$terminalCode			= $this->terminalCode;
 			$order_total			= round($order -> order_total);
@@ -114,36 +127,21 @@ function WC_P() {
                 $order->id, add_query_arg('key', $order->order_key, $this->get_return_url($this->order)))
             );
         }
-	}
-    /**
-     * Add the Gateway to WooCommerce.
-     **/
-    function woocommerce_add_JPpayment_gateway($methods) {
-        $methods[] = 'WC_full_Ppayment';
-        return $methods;
-    }
+ 
 
-    add_filter('woocommerce_payment_gateways', 'woocommerce_add_JPpayment_gateway' );
-
-
-	/*
-	 * CallBack Handler
-	 * 
-	 * Handle The TransAction With JP Servers !
-	 */
-	class callback_controller extends WC_Payment_Gateway{
-		public function __construct(){
+		/**
+		 * Check for valid payu server callback
+		 **/
+		function check_Ppayment_response(){
 			global $woocommerce;
-
 			require_once ("pasargadGatewayClass.php");
+
 			$order_id 				= $_GET['iN'];
 			$tref 					= $_GET['tref'];
 			$order 					= new WC_Order($order_id);
 
-			$payment_Model			= new WC_full_Ppayment();
-
-			$merchantCode			= $payment_Model->merchantCode;
-			$terminalCode			= $payment_Model->terminalCode;
+			$merchantCode			= $this -> merchantCode;
+			$terminalCode			= $this -> terminalCode;
 
 			$OrderStatus = new PasargadBank_GateWay();
 
@@ -155,31 +153,88 @@ function WC_P() {
 
 					if($OrderStatus->verifyOrder($merchantCode, $terminalCode)){
 						if($order->status !=='completed'){
+			                    $this -> msg['class'] = 'woocommerce_message';
+					            $this -> msg['message'] = "پرداخت شما با موفقیت انجام شد.";
+
 								$order->payment_complete();
 			                    $order->add_order_note('پرداخت موفق، کد پرداخت: '.$tref);
 			                    $woocommerce->cart->empty_cart();
-								header("location: " . get_site_url() . "/my-account/?TransAction=Succes&Order_id=" . $order_id);
-								exit;
 						}
 					}else{
+	                    $this -> msg['class'] = 'woocommerce_error';
+			            $this -> msg['message'] = "پرداخت شما تایید نشد.";
+
 						$order -> add_order_note('پرداخت تایید نشد.');
-						header("location: " . get_site_url() . "/my-account/?TransAction=NotValidated&Order_id=" . $order_id);
-						exit;
 					}
 
 				}else{
-					unset($_SESSION['pasargadAmount']);
+	                $this -> msg['class'] = 'woocommerce_error';
+			        $this -> msg['message'] = "پرداخت ناموفق.";
+
 					$order -> add_order_note('پرداخت ناموفق.');
-					header("location: " . get_site_url() . "/my-account/?TransAction=Faild&Order_id=" . $order_id);
-					exit;
 				}
 
 			}else{
-				unset($_SESSION['pasargadAmount']);
+	            $this -> msg['class'] = 'woocommerce_error';
+			    $this -> msg['message'] = "پرداخت نامعتبر.";
+
 				$order -> add_order_note('پرداخت نا معتبر.');
-				header("location: " . get_site_url() . "/my-account/?TransAction=NotValid&Order_id=" . $order_id);
 			}
+
+			unset($_SESSION['pasargadAmount']);
+
+			$redirect_url = ($this->redirect_page_id=="" || $this->redirect_page_id==0)?get_site_url() . "/":get_permalink($this->redirect_page_id);
+			$redirect_url = add_query_arg( array('message'=> urlencode($this->msg['message']), 'class'=>$this->msg['class']), $redirect_url );
+			wp_redirect( $redirect_url );
+			exit;
 		}
+
+		// get all pages
+		function get_pages($title = false, $indent = true) {
+		    $wp_pages = get_pages('sort_column=menu_order');
+		    $page_list = array();
+		    if ($title) $page_list[] = $title;
+		    foreach ($wp_pages as $page) {
+		        $prefix = '';
+		        // show indented child pages?
+		        if ($indent) {
+		            $has_parent = $page->post_parent;
+		            while($has_parent) {
+		                $prefix .=  ' - ';
+		                $next_page = get_page($has_parent);
+		                $has_parent = $next_page->post_parent;
+		            }
+		        }
+		        // add to page list array array
+		        $page_list[$page->ID] = $prefix . $page->post_title;
+		    }
+		    return $page_list;
+		}
+
+	}
+    /**
+     * Add the Gateway to WooCommerce.
+     **/
+    function woocommerce_add_Ppayment_gateway($methods) {
+        $methods[] = 'WC_full_Ppayment';
+        return $methods;
+    }
+
+    add_filter('woocommerce_payment_gateways', 'woocommerce_add_Ppayment_gateway' );
+
+
+}
+
+
+if($_GET['message']!='')
+{
+	add_action('the_content', 'showMessage');
+
+	function showMessage($content)
+	{
+		return '<div class="'.htmlentities($_GET['class']).'">'.urldecode($_GET['message']).'</div>'.$content;
 	}
 }
+
+
 ?>
