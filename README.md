@@ -12,10 +12,15 @@ Released under MIT License.
 Requirements
 =========
 
-- WordPress 4.1.1+
-- WooCommerce 2.3.7+
-- Farsi Package of WooCommerce 2.2+
-- and you must change permalink settings in wordpress to "post name"
+- WordPress 4.2.4+
+- WooCommerce 2.4.4+
+
+Bug fixes
+=========
+
+- fixes woocommerce 2.4.4 API bug
+- it will display succesfull buy message.
+- now you can choose a page to display your message. (callback page)
 
 Official Page
 =========
