@@ -6,7 +6,7 @@ This plugin works on WooCommerce system ( WooCommerce is a plugin for WordPress 
 With this plugin you can make File-Shopping websites.
 
 Only For Iranian Users ( Also written in Farsi ) ( if you are from Iran and wants to know more about this plugin, you can see my website at the end of this file. )<br />
-Version : 1.0<br />
+Version : 2.0<br />
 Released under MIT License.
 
 Requirements
