@@ -20,7 +20,7 @@ Bug fixes
 
 - fixes woocommerce 2.4.4 API bug
 - it will display succesfull buy message.
-- now you can choose a page to display your message. (callback page)
+- now you can choose a page to display messages. (callback page)
 
 Official Page
 =========
