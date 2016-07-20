@@ -30,6 +30,7 @@ Bug fixes
 
 - fix "doesnt show setting page in woocommerce".
 - add IRR/IRT (currency) understanding for better compatibility.
+- fix privateKey typo.
 
 Official Page
 =========
