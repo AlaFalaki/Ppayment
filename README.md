@@ -18,9 +18,16 @@ Requirements
 Bug fixes
 =========
 
+**version 2.0:**
 - fixes woocommerce 2.4.4 API bug.
 - it will display succesfull buy message.
+ 
+**version 2.2:**
+
 - now you can choose a page to display messages. (callback page)
+
+**version 2.5:**
+
 - fix "doesnt show setting page in woocommerce".
 - add IRR/IRT (currency) understanding for better compatibility.
 
