@@ -26,7 +26,7 @@ class PasargadBank_GateWay{
 	function sendOrder($invoiceNumber = NULL, $invoiceDate = NULL, $amount = NULL, $merchantCode, $terminalCode, $redirectAddress){
 		if(isset($invoiceNumber) AND isset($invoiceDate) AND isset($amount)){
 			require_once("libraries/RSAProcessor.class.php");
-			$processor = new RSAProcessor(plugin_dir_path( __FILE__ ) . "publicKey.xml",RSAKeyType::XMLFile);
+			$processor = new RSAProcessor(plugin_dir_path( __FILE__ ) . "privateKey.xml",RSAKeyType::XMLFile);
 			date_default_timezone_set('Asia/Tehran');
 			$timeStamp = date("Y/m/d H:i:s");
 			$action = "1003";
@@ -110,7 +110,7 @@ class PasargadBank_GateWay{
 							'sign' => ''
 						);
 		
-		$processor = new RSAProcessor(plugin_dir_path( __FILE__ ) . "publicKey.xml",RSAKeyType::XMLFile);
+		$processor = new RSAProcessor(plugin_dir_path( __FILE__ ) . "privateKey.xml",RSAKeyType::XMLFile);
 		
 		$data = "#". $fields['MerchantCode'] ."#". $fields['TerminalCode'] ."#". $fields['InvoiceNumber'] ."#". $fields['InvoiceDate'] ."#". $fields['amount'] ."#". $fields['TimeStamp'] ."#";
 		$data = sha1($data,true);
