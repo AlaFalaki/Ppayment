@@ -3,7 +3,7 @@
  * Plugin Name: درگاه پرداخت پاسارگاد برای ووکامرس همراه با تایید سفارش
  * Plugin URI: http://blog.alafalaki.ir/%D8%A7%D9%81%D8%B2%D9%88%D9%86%D9%87-%D9%BE%D8%B1%D8%AF%D8%A7%D8%AE%D8%AA-%D8%A8%D8%A7%D9%86%DA%A9-%D9%BE%D8%A7%D8%B3%D8%A7%D8%B1%DA%AF%D8%A7%D8%AF-%D9%88%D9%88%DA%A9%D8%A7%D9%85%D8%B1%D8%B3/
  * Description: درگاه کامل جهان پی برای سایت های فروش فایل. لطفا قبل از استفاده از طریق لینک دیدن خانه افزونه، تغییرات مورد نیاز افزونه را اعمال نمایید.
- * Version: 2.2
+ * Version: 2.5
  * Author: Ala Alam Falaki
  * Author URI: http://AlaFalaki.ir
  * 
@@ -19,10 +19,10 @@ add_action('plugins_loaded', 'WC_P', 0); // Make The Plugin Work...
 function WC_P() {
     if ( !class_exists( 'WC_Payment_Gateway' ) ) return; // import your gate way class extends/
 	
-    class WC_full_Ppayment extends WC_Payment_Gateway {
+    class WC_full_ppayment extends WC_Payment_Gateway {
         public function __construct(){
         	
-            $this -> id 			 	 = 'Ppayment';
+            $this -> id 			 	 = 'ppayment';
             $this -> method_title 	  	 = 'بانک پاسارگاد';
             $this -> has_fields 	   	 = false;
             $this -> init_form_fields();
@@ -37,15 +37,15 @@ function WC_P() {
 			$this -> msg['message'] = "";
 			$this -> msg['class'] = "";
  
-			add_action('woocommerce_api_' . strtolower( get_class( $this ) ), array( $this, 'check_Ppayment_response' ) );
+			add_action('woocommerce_api_' . strtolower( get_class( $this ) ), array( $this, 'check_ppayment_response' ) );
 
   		    if ( version_compare( WOOCOMMERCE_VERSION, '2.0.0', '>=' ) ) { // Compatibalization plugin for diffrent versions.
-                add_action( 'woocommerce_update_options_payment_gateways_Ppayment', array( &$this, 'process_admin_options' ) );
+                add_action( 'woocommerce_update_options_payment_gateways_ppayment', array( &$this, 'process_admin_options' ) );
              } else {
                 add_action( 'woocommerce_update_options_payment_gateways', array( &$this, 'process_admin_options' ) );
             }
 			 
-			add_action('woocommerce_receipt_Ppayment', array(&$this, 'receipt_page'));
+			add_action('woocommerce_receipt_ppayment', array(&$this, 'receipt_page'));
         }
 
 		/**
@@ -87,12 +87,15 @@ function WC_P() {
         public function admin_options(){
             echo '<h3>درگاه پرداخت بانک پاسارگاد</h3>';
 			echo '<table class="form-table">';
+			echo 
+			// IRR
+			// IRT
 			$this -> generate_settings_html();
 			echo '</table>';
 			echo '
 				<div>
 					<a href="http://blog.alafalaki.ir/%D9%BE%D9%84%D8%A7%DA%AF%DB%8C%D9%86-jppayment-%D8%A8%D8%B1%D8%A7%DB%8C-woocommerce-%D9%81%D8%B1%D9%88%D8%B4%DA%AF%D8%A7%D9%87-%D8%B3%D8%A7%D8%B2/">صفحه رسمی پلاگین + مستندات .</a><br />
-					<a href="https://github.com/AlaFalaki/JPpayment" target="_blank">حمایت از پروژه در GitHub .</a><br />
+					<a href="https://github.com/AlaFalaki/Jppayment" target="_blank">حمایت از پروژه در GitHub .</a><br />
 					<a href="https://twitter.com/AlaFalaki" target="_blank">من را در تویتر دنبال کنید .</a>
 				</div>
 			';
@@ -103,7 +106,7 @@ function WC_P() {
 		function receipt_page($order_id){
             global $woocommerce;
 			
-            $order = &new WC_Order($order_id);
+            $order = new WC_Order($order_id);
 			
 			
             $callback 				= ($this -> redirect_page_id=="" || $this -> redirect_page_id==0)?get_site_url() . "/":get_permalink($this -> redirect_page_id);
@@ -112,17 +115,22 @@ function WC_P() {
 			$merchantCode			= $this->merchantCode;
 			$terminalCode			= $this->terminalCode;
 			$order_total			= round($order -> order_total);
+
+			if(get_woocommerce_currency() == "IRT")
+			{
+				$order_total = $order_total*10;
+			}
 			
 				$gateWay = new PasargadBank_GateWay();
 				date_default_timezone_set('Asia/Tehran');
-				$gateWay->SendOrder($order_id,date("Y/m/d H:i:s"),$order_total*10, $merchantCode, $terminalCode, $callback);
+				$gateWay->SendOrder($order_id,date("Y/m/d H:i:s"),$order_total, $merchantCode, $terminalCode, $callback);
         }
         
         /**
          * Process_payment Function.
          **/
         function process_payment($order_id){
-            $order = &new WC_Order($order_id);
+            $order = new WC_Order($order_id);
             return array('result' => 'success', 'redirect' => add_query_arg('order',
                 $order->id, add_query_arg('key', $order->order_key, $this->get_return_url($this->order)))
             );
@@ -132,7 +140,7 @@ function WC_P() {
 		/**
 		 * Check for valid payu server callback
 		 **/
-		function check_Ppayment_response(){
+		function check_ppayment_response(){
 			global $woocommerce;
 			require_once ("pasargadGatewayClass.php");
 
@@ -143,11 +151,18 @@ function WC_P() {
 			$merchantCode			= $this -> merchantCode;
 			$terminalCode			= $this -> terminalCode;
 
-			$OrderStatus = new PasargadBank_GateWay();
+			$OrderStatus 			= new PasargadBank_GateWay();
 
+			$order_total			= round($order -> order_total);
+
+			if(get_woocommerce_currency() == "IRT")
+			{
+				$order_total = $order_total*10;
+			}
+			
 			$result = $OrderStatus->getOrder($_GET['tref']);
 
-			if(($_SESSION['pasargadAmount']/10) == $order->order_total){
+			if(($_SESSION['pasargadAmount']) == $order_total){
 
 				if($result['resultObj']['result'] == "True"){ // Check the result.
 
@@ -215,12 +230,12 @@ function WC_P() {
     /**
      * Add the Gateway to WooCommerce.
      **/
-    function woocommerce_add_Ppayment_gateway($methods) {
-        $methods[] = 'WC_full_Ppayment';
+    function woocommerce_add_ppayment_gateway($methods) {
+        $methods[] = 'WC_full_ppayment';
         return $methods;
     }
 
-    add_filter('woocommerce_payment_gateways', 'woocommerce_add_Ppayment_gateway' );
+    add_filter('woocommerce_payment_gateways', 'woocommerce_add_ppayment_gateway' );
 
 
 }
