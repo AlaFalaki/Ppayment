@@ -60,11 +60,11 @@ function WC_P() {
                     'description' => 'برای امکان پرداخت کاربران از طریق این درگاه باید تیک فعال سازی زده شده باشد .',
                     'default' => 'no'),
                 'merchantCode' => array(
-                    'title' => 'کد merchant :',
+                    'title' => ' شماره پذیرنده :',
                     'type' => 'text',
                     'description' => 'شما میتوانید این کد را از بانک ارائه دهنده درگاه دریافت نمایید .'),
                 'terminalCode' => array(
-                    'title' => 'کد terminal :',
+                    'title' => ' شماره ترمینال :',
                     'type' => 'text',
                     'description' => 'شما میتوانید این کد را از بانک ارائه دهنده درگاه دریافت نمایید .'),
                 'title' => array(
