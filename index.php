@@ -1,8 +1,8 @@
 <?php
 /*
  * Plugin Name: درگاه پرداخت پاسارگاد برای ووکامرس همراه با تایید سفارش
- * Plugin URI: http://blog.alafalaki.ir/%D8%A7%D9%81%D8%B2%D9%88%D9%86%D9%87-%D9%BE%D8%B1%D8%AF%D8%A7%D8%AE%D8%AA-%D8%A8%D8%A7%D9%86%DA%A9-%D9%BE%D8%A7%D8%B3%D8%A7%D8%B1%DA%AF%D8%A7%D8%AF-%D9%88%D9%88%DA%A9%D8%A7%D9%85%D8%B1%D8%B3/
- * Description: درگاه کامل جهان پی برای سایت های فروش فایل. لطفا قبل از استفاده از طریق لینک دیدن خانه افزونه، تغییرات مورد نیاز افزونه را اعمال نمایید.
+ * Plugin URI: http://blog.alafalaki.ir/%d8%a7%d9%81%d8%b2%d9%88%d9%86%d9%87-%d9%be%d8%b1%d8%af%d8%a7%d8%ae%d8%aa-%d8%a8%d8%a7%d9%86%da%a9-%d9%be%d8%a7%d8%b3%d8%a7%d8%b1%da%af%d8%a7%d8%af-%d9%88%d9%88%da%a9%d8%a7%d9%85%d8%b1%d8%b3/
+ * Description: درگاه کامل بانک پاسارگاد. لطفا قبل از استفاده از طریق لینک دیدن خانه افزونه، تغییرات مورد نیاز افزونه را اعمال نمایید.
  * Version: 2.5
  * Author: Ala Alam Falaki
  * Author URI: http://AlaFalaki.ir
@@ -94,8 +94,8 @@ function WC_P() {
 			echo '</table>';
 			echo '
 				<div>
-					<a href="http://blog.alafalaki.ir/%D9%BE%D9%84%D8%A7%DA%AF%DB%8C%D9%86-jppayment-%D8%A8%D8%B1%D8%A7%DB%8C-woocommerce-%D9%81%D8%B1%D9%88%D8%B4%DA%AF%D8%A7%D9%87-%D8%B3%D8%A7%D8%B2/">صفحه رسمی پلاگین + مستندات .</a><br />
-					<a href="https://github.com/AlaFalaki/Jppayment" target="_blank">حمایت از پروژه در GitHub .</a><br />
+					<a href="http://blog.alafalaki.ir/%d8%a7%d9%81%d8%b2%d9%88%d9%86%d9%87-%d9%be%d8%b1%d8%af%d8%a7%d8%ae%d8%aa-%d8%a8%d8%a7%d9%86%da%a9-%d9%be%d8%a7%d8%b3%d8%a7%d8%b1%da%af%d8%a7%d8%af-%d9%88%d9%88%da%a9%d8%a7%d9%85%d8%b1%d8%b3/">صفحه رسمی پلاگین + مستندات .</a><br />
+					<a href="https://github.com/AlaFalaki/Ppayment" target="_blank">حمایت از پروژه در GitHub .</a><br />
 					<a href="https://twitter.com/AlaFalaki" target="_blank">من را در تویتر دنبال کنید .</a>
 				</div>
 			';
