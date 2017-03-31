@@ -1,6 +1,7 @@
 Retired Repository!
 =========
-This plugin has been moved to wordpress official plugin directory. you can find the latest version <a href="https://wordpress.org/plugins/a-gateway-for-pasargad-bank-on-woocommerce/">here</a>.
+This plugin has been moved to wordpress official plugin directory. you can find the latest version <a href="https://wordpress.org/plugins/a-gateway-for-pasargad-bank-on-woocommerce/">here</a>.<br />
+All the issues and requests are handling there.
 
 Ppayment
 =========
